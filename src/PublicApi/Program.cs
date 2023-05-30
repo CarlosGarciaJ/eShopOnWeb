@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MinimalApi.Endpoint.Configurations.Extensions;
@@ -81,6 +82,10 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddApplicationInsightsTelemetry();
+
+
+
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 builder.Configuration.AddEnvironmentVariables();
@@ -121,6 +126,15 @@ builder.Services.AddSwaggerGen(c =>
                     }
             });
 });
+
+builder.Logging.AddApplicationInsights(
+        configureTelemetryConfiguration: (config) =>
+            config.ConnectionString = "InstrumentationKey=6b465650-92aa-4fee-8af2-1694f1922f85;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/",
+            configureApplicationInsightsLoggerOptions: (options) => { }
+    );
+
+
+//builder.Logging.AddFilter<ApplicationInsightsLoggerProvider>(null, LogLevel.M);
 
 var app = builder.Build();
 
